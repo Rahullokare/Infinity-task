@@ -64,7 +64,7 @@ const Table = () => {
         <p className="opacity-2 text-xs text-slate-500 mb-4">
           * Click on the column header to sort the elements
         </p>
-        <div className="overflow-hidden rounded-lg">
+        <div className=" overflow-x-auto  rounded-lg">
           <table {...getTableProps()} className="min-w-full border text-center">
             <thead>
               {headerGroups.map((headerGroup, i) => (

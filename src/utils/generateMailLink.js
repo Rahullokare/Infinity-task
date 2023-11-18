@@ -1,5 +1,5 @@
 export const generateEmailLink = (invoice) => {
-  const { invoiceNumber, client, dueDate, total } = invoice;
+  const { invoiceNumber, client, dueDate, lineItems } = invoice;
 
   const subject = `Payment Reminder - Invoice #${invoiceNumber}`;
   const body = `
@@ -7,7 +7,7 @@ Dear ${client.name},
 
 This is a friendly reminder regarding invoice #${invoiceNumber} that is due on ${dueDate}.
 
-Total Amount: $${total}
+Total Amount: $${lineItems[0].subtotal}
 
 Please ensure the payment is made by the due date.
 
