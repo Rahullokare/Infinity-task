@@ -2,7 +2,7 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import CreateInvoice from "./pages/CreateInvoice";
 import EditInvoice from "./pages/EditInvoice";
-import Home from "./pages/home";
+import Home from "./pages/Home";
 
 function App() {
   return (
