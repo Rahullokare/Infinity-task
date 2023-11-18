@@ -43,26 +43,18 @@ const Table = () => {
   );
   const { pageIndex, pageSize, globalFilter } = state;
   const handleDelete = (invoiceNumber) => {
-    swal({
-      title: "Are you sure?",
-      text: "Once deleted, you will not be able to recover this invoice!",
-      icon: "warning",
-      buttons: true,
-      dangerMode: true,
-    }).then((willDelete) => {
-      if (willDelete) {
-        // Dispatch an action to delete the invoice with the specified invoiceNumber
-        dispatch(deleteInvoice(invoiceNumber));
+    if (invoiceNumber !== undefined) {
+      console.log("Deleting invoice with number:", invoiceNumber);
 
-        // Optionally show a success message using SweetAlert
-        swal("Poof! Your invoice has been deleted!", {
-          icon: "success",
-        });
-      } else {
-        // Optionally show a cancellation message using SweetAlert
-        swal("Your invoice is safe!");
-      }
-    });
+      // Dispatch the deleteInvoice action with the correct payload structure
+      dispatch(deleteInvoice({ invoiceId: invoiceNumber }));
+
+      swal("Poof! Your invoice has been deleted!", {
+        icon: "success",
+      });
+    } else {
+      console.error("Error: invoiceNumber is undefined");
+    }
   };
 
   return (
@@ -106,9 +98,13 @@ const Table = () => {
               {page.map((row, i) => {
                 prepareRow(row);
                 const statusClass =
-                  row.original.status === "paid"
+                  row.original.status.toLowerCase() === "paid"
                     ? "text-green-500"
-                    : "text-red-500";
+                    : row.original.status.toLowerCase() === "outstanding"
+                    ? "text-yellow-500"
+                    : row.original.status.toLowerCase() === "late"
+                    ? "text-red-500"
+                    : "";
                 return (
                   <tr
                     key={i}
@@ -128,7 +124,9 @@ const Table = () => {
                       <AiFillDelete
                         color="red"
                         className="cursor-pointer"
-                        onClick={() => handleDelete(row.original.invoiceNumber)}
+                        onClick={() =>
+                          handleDelete(row.original?.invoiceNumber)
+                        }
                       />
                       <Link to={`/edit/invoice/${row.original.invoiceNumber}`}>
                         <GrEdit />

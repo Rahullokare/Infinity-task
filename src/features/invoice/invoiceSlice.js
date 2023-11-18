@@ -21,8 +21,9 @@ const invoiceSlice = createSlice({
     },
     deleteInvoice: (state, action) => {
       const { invoiceId } = action.payload;
+      console.log("Deleting invoice with ID:", invoiceId);
       state.invoices = state.invoices.filter(
-        (invoice) => invoice.invoiceId !== invoiceId
+        (invoice) => invoice.invoiceNumber !== invoiceId
       );
     },
   },

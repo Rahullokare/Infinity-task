@@ -233,8 +233,8 @@ const EditInvoice = () => {
                     </p>
                   </div>
 
-                  {invoice.status === "outstanding" ||
-                  invoice.status === "late" ? (
+                  {invoice.status.toLowerCase() === "outstanding" ||
+                  invoice.status.toLowerCase() === "late" ? (
                     <a
                       href={generateEmailLink(invoice)}
                       className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition duration-300"
