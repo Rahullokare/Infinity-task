@@ -125,7 +125,6 @@ const CreateInvoice = () => {
       },
       lineItems: [initialLineItem],
       notes: "",
-      status: "",
     });
   };
 
@@ -179,9 +178,9 @@ const CreateInvoice = () => {
             onChange={handleInputChange}
           >
             <option value="">Select Status</option>
-            <option value="pending">Pending</option>
+            <option value="outstanding">Outstanding</option>
             <option value="paid">Paid</option>
-            <option value="overdue">Overdue</option>
+            <option value="late">Late</option>
           </select>
         </div>
       </div>

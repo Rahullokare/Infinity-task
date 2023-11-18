@@ -1,9 +1,8 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import CreateInvoice from "./pages/createInvoice";
+import CreateInvoice from "./pages/CreateInvoice";
 import EditInvoice from "./pages/EditInvoice";
 import Home from "./pages/home";
-import ViewInvoice from "./pages/ViewInvoice";
 
 function App() {
   return (

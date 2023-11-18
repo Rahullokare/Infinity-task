@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { AiFillDelete, AiFillEye } from "react-icons/ai";
 import { GrEdit } from "react-icons/gr";
 import { deleteInvoice } from "../features/invoice/invoiceSlice";
+import swal from "sweetalert";
 
 const Table = () => {
   const invoices = useSelector((state) => state.invoices);
@@ -42,98 +43,164 @@ const Table = () => {
   );
   const { pageIndex, pageSize, globalFilter } = state;
   const handleDelete = (invoiceNumber) => {
-    // Dispatch an action to delete the invoice with the specified invoiceNumber
-    dispatch(deleteInvoice(invoiceNumber));
-  };
-  return (
-    <div>
-      <div className="w-full bg-white pl-4 mt-8  pr-4">
-        <div className="flex flex-col ">
-          <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div className="py-2 inline-block  min-w-full sm:px-6 lg:px-8">
-              <SearchInput filter={globalFilter} setFilter={setGlobalFilter} />
-              <p className=" opacity-2 text-xs text-slate-500 mb-4">
-                *clicked on the column header to sort the element
-              </p>
-              <div className="overflow-hidden sm:rounded-lg">
-                <table
-                  {...getTableProps()}
-                  className="min-w-full border  text-center"
-                >
-                  <thead>
-                    {headerGroups.map((headerGroup, i) => (
-                      <tr
-                        key={headerGroup.id}
-                        {...headerGroup.getHeaderGroupProps()}
-                        className=" border-b transition duration-300 ease-in-out "
-                      >
-                        {headerGroup.headers.map((column, i) => (
-                          <th
-                            key={headerGroup.headers}
-                            {...column.getHeaderProps(
-                              column.getSortByToggleProps()
-                            )}
-                            scope="col"
-                            className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
-                          >
-                            {column.render("Header")}
-                            <span>
-                              {column.isSorted
-                                ? column.isSortedDesc
-                                  ? "🔽"
-                                  : "🔼"
-                                : ""}
-                            </span>
-                          </th>
-                        ))}
-                        <th>Action</th>
-                      </tr>
-                    ))}
-                  </thead>
-                  <tbody {...getTableBodyProps()}>
-                    {page.map((row, i) => {
-                      prepareRow(row);
-                      return (
-                        <tr
-                          key={i}
-                          {...row.getRowProps()}
-                          className=" border-b transition duration-300 ease-in-out hover:bg-gray-100"
-                        >
-                          {row.cells.map((cell) => {
-                            return (
-                              <>
-                                <td
-                                  key={i}
-                                  {...cell.getCellProps()}
-                                  className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-left"
-                                >
-                                  {cell.render("Cell")}
-                                </td>
-                              </>
-                            );
-                          })}
-                          <td className="flex justify-center gap-3 mt-4">
-                            <AiFillDelete
-                              color="red"
-                              className="cursor-pointer"
-                              onClick={() =>
-                                handleDelete(row.original.invoiceNumber)
-                              }
-                            />
+    swal({
+      title: "Are you sure?",
+      text: "Once deleted, you will not be able to recover this invoice!",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        // Dispatch an action to delete the invoice with the specified invoiceNumber
+        dispatch(deleteInvoice(invoiceNumber));
 
-                            <Link
-                              to={`/edit/invoice/${row.original.invoiceNumber}`}
-                            >
-                              <GrEdit />
-                            </Link>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+        // Optionally show a success message using SweetAlert
+        swal("Poof! Your invoice has been deleted!", {
+          icon: "success",
+        });
+      } else {
+        // Optionally show a cancellation message using SweetAlert
+        swal("Your invoice is safe!");
+      }
+    });
+  };
+
+  return (
+    <div className="w-full bg-white mt-8 p-4 rounded-md shadow-md">
+      <div className="flex flex-col">
+        <SearchInput filter={globalFilter} setFilter={setGlobalFilter} />
+        <p className="opacity-2 text-xs text-slate-500 mb-4">
+          * Click on the column header to sort the elements
+        </p>
+        <div className="overflow-hidden rounded-lg">
+          <table {...getTableProps()} className="min-w-full border text-center">
+            <thead>
+              {headerGroups.map((headerGroup, i) => (
+                <tr
+                  key={headerGroup.id}
+                  {...headerGroup.getHeaderGroupProps()}
+                  className="border-b transition duration-300 ease-in-out"
+                >
+                  {headerGroup.headers.map((column, i) => (
+                    <th
+                      key={i}
+                      {...column.getHeaderProps(column.getSortByToggleProps())}
+                      scope="col"
+                      className="px-6 py-4 text-sm font-medium text-gray-900 text-left"
+                    >
+                      {column.render("Header")}
+                      <span>
+                        {column.isSorted
+                          ? column.isSortedDesc
+                            ? "🔽"
+                            : "🔼"
+                          : ""}
+                      </span>
+                    </th>
+                  ))}
+                  <th>Action</th>
+                </tr>
+              ))}
+            </thead>
+            <tbody {...getTableBodyProps()}>
+              {page.map((row, i) => {
+                prepareRow(row);
+                const statusClass =
+                  row.original.status === "paid"
+                    ? "text-green-500"
+                    : "text-red-500";
+                return (
+                  <tr
+                    key={i}
+                    {...row.getRowProps()}
+                    className="border-b transition duration-300 ease-in-out hover:bg-gray-100"
+                  >
+                    {row.cells.map((cell) => (
+                      <td
+                        key={i}
+                        {...cell.getCellProps()}
+                        className={`px-6 py-4 whitespace-nowrap ${statusClass}  text-sm text-gray-900 text-left`}
+                      >
+                        {cell.render("Cell")}
+                      </td>
+                    ))}
+                    <td className="flex justify-center gap-3 mt-4">
+                      <AiFillDelete
+                        color="red"
+                        className="cursor-pointer"
+                        onClick={() => handleDelete(row.original.invoiceNumber)}
+                      />
+                      <Link to={`/edit/invoice/${row.original.invoiceNumber}`}>
+                        <GrEdit />
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <div className="mt-4 flex justify-between items-center">
+          <div>
+            <button
+              onClick={() => gotoPage(0)}
+              disabled={!canPreviousPage}
+              className="px-2 py-1 border rounded-md mr-2"
+            >
+              {"<<"}
+            </button>
+            <button
+              onClick={previousPage}
+              disabled={!canPreviousPage}
+              className="px-2 py-1 border rounded-md mr-2"
+            >
+              {"<"}
+            </button>
+            <button
+              onClick={nextPage}
+              disabled={!canNextPage}
+              className="px-2 py-1 border rounded-md mr-2"
+            >
+              {">"}
+            </button>
+            <button
+              onClick={() => gotoPage(pageCount - 1)}
+              disabled={!canNextPage}
+              className="px-2 py-1 border rounded-md"
+            >
+              {">>"}
+            </button>
+          </div>
+          <div>
+            <span className="mr-2">
+              Page{" "}
+              <strong>
+                {pageIndex + 1} of {pageOptions.length}
+              </strong>{" "}
+            </span>
+            <span>
+              | Go to page:{" "}
+              <input
+                type="number"
+                defaultValue={pageIndex + 1}
+                onChange={(e) => {
+                  const page = e.target.value ? Number(e.target.value) - 1 : 0;
+                  gotoPage(page);
+                }}
+                className="w-16 px-2 py-1 border rounded-md"
+              />
+            </span>{" "}
+            <select
+              value={pageSize}
+              onChange={(e) => setPageSize(Number(e.target.value))}
+              className="ml-2 px-2 py-1 border rounded-md"
+            >
+              {[5, 10, 20, 30, 40, 50].map((pageSize) => (
+                <option key={pageSize} value={pageSize}>
+                  Show {pageSize}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>

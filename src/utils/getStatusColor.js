@@ -10,3 +10,16 @@ export const getStatusColor = (status) => {
       return "";
   }
 };
+
+export const getStatusStyle = (status) => {
+  switch (status) {
+    case "paid":
+      return "bg-green-100"; // Green for paid
+    case "late":
+      return "bg-yellow-100"; // Yellow for late
+    case "outstanding":
+      return "bg-red-100"; // Red for outstanding
+    default:
+      return "";
+  }
+};
